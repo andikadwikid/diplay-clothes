@@ -1,7 +1,7 @@
-# Development override: publish PostgreSQL and the MinIO API on localhost so you can
-# run the Go backend and the Vite dev server directly on your machine.
+# Development override for the STATEFUL tier: publish PostgreSQL and the MinIO API on localhost
+# so you can run the Go backend and the Vite dev server directly on your machine.
 #
-#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres minio
+#   docker compose -f docker-compose.data.yml -f docker-compose.dev.yml up -d --build --wait
 #
 # (Ports are bound to 127.0.0.1 only.)
 

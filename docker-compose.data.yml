@@ -1,0 +1,74 @@
+# STATEFUL tier: PostgreSQL (database) and MinIO (S3 object storage).
+#
+# This is the only place that holds data. It has its own project and lifecycle, separate from
+# the stateless app tier (docker-compose.yml), so redeploying, scaling or tearing down the app
+# can never touch your data. All state lives in two named volumes whose names are fixed:
+#
+#   diplay-clothes_pgdata      PostgreSQL data
+#   diplay-clothes_miniodata   MinIO objects (the product images)
+#
+#   docker compose -f docker-compose.data.yml up -d --build --wait    start (or keep running)
+#   docker compose -f docker-compose.data.yml down                    stop; data is KEPT
+#   docker compose -f docker-compose.data.yml down -v                 stop and DELETE ALL DATA
+#
+# The app tier reaches these services over the shared `diplay-data` network (nothing here is
+# published to the internet; the MinIO console is bound to localhost only).
+#
+# Defaults are for LOCAL USE ONLY. Override them with a .env file (see .env.example).
+
+name: diplay-clothes-data
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    stop_grace_period: 30s # let PostgreSQL shut down cleanly before the container is killed
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-diplay}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-diplay_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-diplay}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - data
+    labels:
+      com.diplay.tier: stateful
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    # Built from source (deploy/minio/Dockerfile): MinIO no longer publishes prebuilt
+    # community images. The first build takes a few minutes; later runs are cached.
+    image: diplay-minio:local
+    build: ./deploy/minio
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    volumes:
+      - miniodata:/data
+    networks:
+      - data
+    labels:
+      com.diplay.tier: stateful
+    ports:
+      # Only the web console is published (to localhost). Files are served through the API.
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
+
+volumes:
+  pgdata:
+    name: diplay-clothes_pgdata
+    labels:
+      com.diplay.tier: stateful
+  miniodata:
+    name: diplay-clothes_miniodata
+    labels:
+      com.diplay.tier: stateful
+
+networks:
+  data:
+    name: diplay-data

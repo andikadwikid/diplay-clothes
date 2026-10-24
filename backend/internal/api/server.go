@@ -44,6 +44,10 @@ func New(d Deps) (*gin.Engine, error) {
 	s := &Server{cfg: d.Cfg, store: d.Store, storage: d.Storage, issuer: d.Issuer, limiter: d.Limiter}
 
 	r := gin.New()
+	// Keep uploads entirely in memory. Gin's default (32 MiB) would spill larger
+	// multipart bodies to a temp file, which is hidden local state and fails on a
+	// read-only container filesystem. The upload limit is enforced separately.
+	r.MaxMultipartMemory = d.Cfg.MaxUploadBytes + (2 << 20)
 	r.Use(gin.Recovery(), gin.Logger(), securityHeaders)
 	// With no trusted proxies configured, ClientIP is the socket peer, so a
 	// client cannot dodge the login limiter by forging X-Forwarded-For.

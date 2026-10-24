@@ -1,52 +1,46 @@
-# Local stack: storefront + admin panel (nginx), Go/Gin API, PostgreSQL, MinIO.
+# STATELESS tier: the Go/Gin API (`backend`) and nginx with the built web app (`web`).
 #
-#   docker compose up --build
+# Nothing here keeps state: no volumes, read-only root filesystems, no capabilities, non-root
+# users, configuration only through environment variables. Authentication is a JWT signed
+# with a shared secret, so any replica can serve any request. Containers can be killed,
+# replaced or multiplied at will:
+#
+#   docker compose up -d --build                    start / redeploy the app
+#   docker compose up -d --scale backend=4          run four API replicas
+#   docker compose down --remove-orphans            remove the app (data is not touched)
+#
+# State lives in docker-compose.data.yml (PostgreSQL + MinIO), which must be running first:
+#
+#   docker compose -f docker-compose.data.yml up -d --build --wait
+#   docker compose up -d --build
 #   -> http://localhost:3000          storefront
 #   -> http://localhost:3000/admin    admin panel  (admin / admin12345 by default)
-#   -> http://localhost:9001          MinIO console (minioadmin / minioadmin123)
 #
 # Defaults are for LOCAL USE ONLY. Override them with a .env file (see .env.example).
 
 name: diplay-clothes
 
+# Hardening shared by every stateless service.
+x-stateless: &stateless
+  restart: unless-stopped
+  read_only: true # the container filesystem is immutable...
+  tmpfs:
+    - /tmp:size=32m,mode=1777 # ...except scratch space in RAM, which disappears with the container
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  stop_grace_period: 15s
+  labels:
+    com.diplay.tier: stateless
+
 services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-diplay}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-diplay_dev_password}
-      POSTGRES_DB: ${POSTGRES_DB:-diplay}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-
-  minio:
-    # Built from source (deploy/minio/Dockerfile): MinIO no longer publishes prebuilt
-    # community images. The first build takes a few minutes; later runs are cached.
-    build: ./deploy/minio
-    restart: unless-stopped
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
-    volumes:
-      - miniodata:/data
-    ports:
-      # Only the web console is published (to localhost). Files are served through the API.
-      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
-
   backend:
+    <<: *stateless
+    image: diplay-backend:local
     build: ./backend
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-      minio:
-        condition: service_healthy # the backend then creates the bucket on first start
+    deploy:
+      replicas: ${BACKEND_REPLICAS:-2}
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-diplay}:${POSTGRES_PASSWORD:-diplay_dev_password}@postgres:5432/${POSTGRES_DB:-diplay}?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-before-deploying-0123456789}
@@ -62,19 +56,22 @@ services:
       # Trust X-Forwarded-For only from the private Docker network (the nginx container),
       # so the login rate limiter sees real client IPs and cannot be spoofed from outside.
       TRUSTED_PROXIES: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
-    ports:
-      # Handy for curl/Postman with a Bearer token; bound to localhost only.
-      - "127.0.0.1:8080:8080"
+    networks:
+      - default # talks to nginx
+      - data # talks to PostgreSQL and MinIO (started by docker-compose.data.yml)
+    # No published ports and no container_name: that is what lets it be scaled.
+    # (The API is reachable through the web container at /api.)
 
   web:
+    <<: *stateless
+    image: diplay-web:local
     build: .
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
     ports:
-      - "${WEB_PORT:-3000}:80"
+      - "${WEB_PORT:-3000}:8080"
+    networks:
+      - default # only the API is reachable from here, never the database or MinIO
 
-volumes:
-  pgdata:
-  miniodata:
+networks:
+  data:
+    external: true
+    name: diplay-data

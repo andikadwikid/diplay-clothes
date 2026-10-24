@@ -23,16 +23,29 @@ Without the backend running, the storefront falls back to the bundled demo produ
 
 ### Menjalankan dengan Docker
 
+Docker dibagi menjadi dua lapisan dengan siklus hidup terpisah:
+
+| Lapisan | Berkas | Isi | Sifat |
+| --- | --- | --- | --- |
+| **Stateful** | `docker-compose.data.yml` | PostgreSQL, MinIO | Satu-satunya tempat data. Dua volume bernama tetap. |
+| **Stateless** | `docker-compose.yml` | API Go (backend), nginx + aplikasi web | Tanpa volume. Boleh dibuang, diganti, atau digandakan kapan saja. |
+
 ```bash
-docker compose up --build
+# 1. Lapisan stateful (sekali; biarkan tetap berjalan). Build pertama lama, lihat catatan di bawah.
+docker compose -f docker-compose.data.yml up -d --build --wait
+
+# 2. Lapisan stateless (bisa diulang kapan saja, tanpa risiko untuk data)
+docker compose up -d --build --wait
 ```
+
+Atau cukup `make up` (dan `make down`); lihat [Makefile](Makefile).
 
 | Alamat | Isi |
 | --- | --- |
 | http://localhost:3000 | Toko (rak pakaian), data diambil dari API |
 | http://localhost:3000/admin | **Panel admin** — login `admin` / `admin12345` (bawaan) |
+| http://localhost:3000/api | API (untuk curl/Postman dengan Bearer token, lihat bagian JWT) |
 | http://localhost:9001 | Konsol web MinIO — `minioadmin` / `minioadmin123` (opsional) |
-| http://127.0.0.1:8080 | API langsung (untuk curl/Postman dengan Bearer token) |
 
 > **Build pertama lama.** MinIO tidak lagi menyediakan image siap pakai (Docker Hub, quay.io, dan
 > ghcr.io sudah tidak punya image `minio/minio`), jadi `deploy/minio/Dockerfile` **mengompilasi MinIO
@@ -40,14 +53,31 @@ docker compose up --build
 > yang lebih lambat, dan kompilasi Go cukup berat jadi beri Docker memori yang lega), tapi hanya sekali;
 > build berikutnya memakai cache. Butuh koneksi internet saat build.
 
-Perintah berguna:
+Perintah sehari-hari:
 
 ```bash
-docker compose logs -f backend     # log API
-docker compose down                # hentikan (data tetap ada di volume)
-docker compose down -v             # hentikan DAN hapus semua data (database + gambar)
-cp .env.example .env               # ubah password/secret/port (semua opsional)
+docker compose up -d --build                    # deploy ulang aplikasi (aman untuk data)
+docker compose up -d --scale backend=4          # jalankan 4 replika API
+docker compose logs -f backend                  # log API (semua replika)
+docker compose down --remove-orphans            # hapus aplikasi; data TIDAK tersentuh, bahkan dengan -v
+docker compose -f docker-compose.data.yml down  # hentikan PostgreSQL + MinIO; data tetap ada di volume
+cp .env.example .env                            # ubah password/secret/port/jumlah replika (semua opsional)
 ```
+
+**Menghapus semua data** (database + semua gambar) harus disengaja dan hanya bisa lewat lapisan stateful:
+
+```bash
+docker compose down --remove-orphans
+docker compose -f docker-compose.data.yml down -v    # atau: make reset-data
+```
+
+Bila `docker compose up` mengeluh `network diplay-data ... could not be found`, lapisan stateful belum dijalankan
+(langkah 1).
+
+**Sudah pernah menjalankan versi sebelumnya (satu berkas compose)?** Data Anda aman: volumenya bernama sama
+(`diplay-clothes_pgdata`, `diplay-clothes_miniodata`). Jalankan `docker compose down --remove-orphans` (tanpa `-v`) untuk
+mencopot kontainer lama, lalu langkah 1 dan 2 di atas. Peningkatan ini sudah saya uji; data, gambar, dan token login
+lama tetap berlaku.
 
 ### Memakai panel admin
 
@@ -69,9 +99,11 @@ isi file, bukan dari nama/ekstensi. Untuk hasil terbaik ikuti aturan di bagian [
 ### Arsitektur
 
 ```
-Browser ──► nginx :3000 ──┬─ /            file statis (toko + admin, React)
-                          ├─ /api/*  ──►  Go/Gin :8080 ──► PostgreSQL   (produk, admin)
-                          └─ /media/* ──► Go/Gin :8080 ──► MinIO bucket  (gambar, PRIVAT)
+                      ┌────────── STATELESS (docker-compose.yml) ───────────┐   ┌─── STATEFUL (docker-compose.data.yml) ──┐
+Browser ──► nginx :3000 ─┬─ /            file statis (toko + admin, React)   │
+                         ├─ /api/*   ──► Go/Gin  × N replika ───────────────────► PostgreSQL ── volume diplay-clothes_pgdata
+                         └─ /media/* ──► Go/Gin  × N replika ───────────────────► MinIO (bucket PRIVAT) ── volume diplay-clothes_miniodata
+                      └─────────────────────────────────────────────────────┘   └─────────────────────────────────────────┘
 ```
 
 - Semua lewat **satu origin**, jadi cookie login berfungsi tanpa CORS.
@@ -81,6 +113,47 @@ Browser ──► nginx :3000 ──┬─ /            file statis (toko + admi
 - Kunci objek dibuat server (`products/<id>/<pose>-<acak>.<ext>`), tidak pernah dari nama file pengguna.
 - Halaman admin adalah chunk terpisah, sehingga pengunjung toko tidak mengunduhnya.
 
+#### Lapisan stateless (backend + web)
+
+Tidak ada satu pun yang disimpan di kontainer ini, sehingga mereka boleh mati, diganti, atau digandakan:
+
+- **Tanpa volume, filesystem read-only** (`read_only: true`); satu-satunya tempat menulis adalah `/tmp` berupa tmpfs
+  (di RAM, hilang bersama kontainer). `cap_drop: ALL`, `no-new-privileges`, dan berjalan sebagai user non-root
+  (backend `app`, nginx `nginx`). Upload diproses di memori dan langsung dialirkan ke MinIO, tanpa file sementara.
+- **Login tanpa sesi di server:** JWT ditandatangani dengan `JWT_SECRET` yang sama di semua replika, jadi token yang
+  diterbitkan satu replika sah di replika lain, dan **tetap sah setelah deploy ulang**.
+- **Bisa digandakan:** tanpa `container_name` dan tanpa port host. nginx me-resolve `backend` lewat DNS Docker tiap
+  beberapa detik, sehingga replika baru langsung menerima trafik dan replika yang mati dilewati, tanpa reload nginx.
+  Jumlah awal diatur `BACKEND_REPLICAS` (bawaan 2), atau `--scale backend=N`.
+- **Pembatas login ada di nginx** (10 percobaan/menit/IP, lalu HTTP 429), jadi berlaku sama untuk semua replika.
+  Pembatas di dalam backend hanya lapis kedua dan bersifat per-replika (disimpan di memori).
+- **Terpisah dari data:** web hanya ada di jaringan aplikasi dan tidak bisa menjangkau PostgreSQL/MinIO; hanya backend
+  yang tersambung ke jaringan `diplay-data`.
+- Backend menunggu PostgreSQL dan MinIO sendiri saat start (maks. 45 dtik, lalu keluar dan di-restart Docker) dan
+  tersambung kembali sendiri bila keduanya sempat mati; kontainernya tidak perlu di-restart.
+- Bukan *rolling update*: `up -d --build` mengganti semua replika sekaligus (jeda singkat).
+
+#### Lapisan stateful (PostgreSQL + MinIO)
+
+- Datanya hanya di dua volume bernama tetap: `diplay-clothes_pgdata` dan `diplay-clothes_miniodata`.
+- Siklus hidupnya terpisah dari aplikasi: `docker compose down -v` pada lapisan aplikasi tidak bisa menghapusnya.
+  Menghapus data harus lewat `docker compose -f docker-compose.data.yml down -v`.
+- `stop_grace_period: 30s` agar PostgreSQL dan MinIO sempat berhenti dengan bersih; tidak ada port yang dibuka ke
+  internet (konsol MinIO hanya di `127.0.0.1:9001`).
+- Kredensial awal PostgreSQL tersimpan di dalam volume saat pertama kali dibuat: mengubah `POSTGRES_PASSWORD` di `.env`
+  sesudahnya **tidak** mengubah password database yang sudah ada (ubah lewat `ALTER USER`, atau hapus volume bila
+  datanya tidak penting).
+- Cadangan (contoh, saat lapisan stateful berjalan):
+
+  ```bash
+  mkdir -p backups
+  docker compose -f docker-compose.data.yml exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB"' > backups/db.dump
+  docker run --rm -v diplay-clothes_miniodata:/data -v "$PWD/backups":/backup alpine tar czf /backup/minio.tgz -C /data .
+  ```
+
+  Dump database di atas sudah saya uji: bisa di-restore dengan `pg_restore` ke database kosong dan produknya terbaca
+  kembali. Arsip MinIO memuat semua objek gambar, tetapi langkah memulihkannya ke volume belum saya uji.
+
 ### Autentikasi (JWT)
 
 - `POST /api/auth/login` memverifikasi password (**bcrypt**, tabel `admin_users`) dan mengembalikan **JWT HS256**
@@ -89,13 +162,14 @@ Browser ──► nginx :3000 ──┬─ /            file statis (toko + admi
   panel admin — jadi token tidak pernah bisa dibaca JavaScript — dan di body respons untuk klien API:
 
   ```bash
-  TOKEN=$(curl -s localhost:8080/api/auth/login -H 'content-type: application/json' \
+  TOKEN=$(curl -s localhost:3000/api/auth/login -H 'content-type: application/json' \
     -d '{"username":"admin","password":"admin12345"}' | jq -r .token)
-  curl -s localhost:8080/api/admin/products -H "Authorization: Bearer $TOKEN"
+  curl -s localhost:3000/api/admin/products -H "Authorization: Bearer $TOKEN"
   ```
 - Verifikasi hanya menerima **HS256** (algoritma `none`/lainnya ditolak), mewajibkan `exp`, dan memeriksa `iss`.
-- Perlindungan lain: pembatas login 10 percobaan/menit/IP (HTTP 429), perbandingan bcrypt tetap dijalankan untuk
-  username yang tidak ada, penolakan request lintas-situs (`Sec-Fetch-Site`) untuk perubahan data berbasis cookie.
+- Perlindungan lain: pembatas login 10 percobaan/menit/IP (HTTP 429; di nginx untuk semua replika, plus lapis kedua di
+  backend), perbandingan bcrypt tetap dijalankan untuk username yang tidak ada, penolakan request lintas-situs
+  (`Sec-Fetch-Site`) untuk perubahan data berbasis cookie.
 - **Logout** menghapus cookie. JWT bersifat stateless, jadi token yang sudah disalin tetap sah sampai kedaluwarsa;
   mengganti `JWT_SECRET` membatalkan semua token sekaligus.
 - Akun admin disinkronkan dari `ADMIN_USERNAME`/`ADMIN_PASSWORD` setiap backend start (env = sumber kebenaran).
@@ -139,8 +213,8 @@ secret/password contoh dari `.env.example`.
 ### Pengembangan tanpa Docker penuh
 
 ```bash
-# 1. Postgres + MinIO saja, dengan port dibuka ke localhost
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres minio
+# 1. Lapisan stateful saja, dengan port PostgreSQL/MinIO dibuka ke localhost
+docker compose -f docker-compose.data.yml -f docker-compose.dev.yml up -d --build --wait
 
 # 2. Backend (Go ≥ 1.26)
 cd backend
@@ -167,7 +241,7 @@ TEST_DATABASE_URL='postgres://diplay:diplay_dev_password@127.0.0.1:5432/postgres
 - Ganti **semua** nilai contoh: `ADMIN_PASSWORD`, `JWT_SECRET`, password Postgres, dan kunci MinIO. Untuk MinIO,
   buat access key khusus aplikasi alih-alih memakai root user (compose memakai root demi kemudahan lokal).
 - Sajikan lewat **HTTPS** (mis. reverse proxy/CDN di depan nginx) dan set `COOKIE_SECURE=true`.
-- Jangan publikasikan port Postgres/MinIO ke internet; cadangkan volume `pgdata` dan `miniodata`.
+- Jangan publikasikan port Postgres/MinIO ke internet; cadangkan volume `diplay-clothes_pgdata` dan `diplay-clothes_miniodata`.
 - Keterbatasan yang disengaja: satu akun admin dari env, tanpa refresh token/pencabutan token per-sesi, tanpa
   pengubahan ukuran/konversi gambar di server (unggah file yang sudah siap), tanpa riwayat perubahan.
 - MinIO berlisensi AGPLv3; periksa implikasinya bila Anda mendistribusikannya.
@@ -185,7 +259,9 @@ TEST_DATABASE_URL='postgres://diplay:diplay_dev_password@127.0.0.1:5432/postgres
 | `src/admin/*` | Admin panel (login, product list, product form with image upload, live rack preview) |
 | `src/api/client.ts` | Same-origin fetch wrapper |
 | `backend/` | Go + Gin API (config, PostgreSQL store, MinIO storage, JWT auth, handlers, tests) |
-| `docker-compose.yml`, `Dockerfile`, `deploy/` | Local stack: nginx + app, backend, PostgreSQL, MinIO (built from source) |
+| `docker-compose.data.yml` | **Stateful** tier: PostgreSQL + MinIO (built from source), two named volumes |
+| `docker-compose.yml`, `Dockerfile`, `backend/Dockerfile`, `deploy/nginx.conf` | **Stateless** tier: Go API (scalable) + nginx with the web app |
+| `docker-compose.dev.yml`, `Makefile` | Dev port override for the data tier; `make up/down/redeploy/reset-data` |
 | `public/images/products/*.svg` | **Placeholder** artwork (14 files) |
 | `scripts/generate-placeholders.mjs` | Generates that placeholder artwork |
 
