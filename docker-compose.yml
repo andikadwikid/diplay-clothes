@@ -1,0 +1,80 @@
+# Local stack: storefront + admin panel (nginx), Go/Gin API, PostgreSQL, MinIO.
+#
+#   docker compose up --build
+#   -> http://localhost:3000          storefront
+#   -> http://localhost:3000/admin    admin panel  (admin / admin12345 by default)
+#   -> http://localhost:9001          MinIO console (minioadmin / minioadmin123)
+#
+# Defaults are for LOCAL USE ONLY. Override them with a .env file (see .env.example).
+
+name: diplay-clothes
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-diplay}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-diplay_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-diplay}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    # Built from source (deploy/minio/Dockerfile): MinIO no longer publishes prebuilt
+    # community images. The first build takes a few minutes; later runs are cached.
+    build: ./deploy/minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    volumes:
+      - miniodata:/data
+    ports:
+      # Only the web console is published (to localhost). Files are served through the API.
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy # the backend then creates the bucket on first start
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-diplay}:${POSTGRES_PASSWORD:-diplay_dev_password}@postgres:5432/${POSTGRES_DB:-diplay}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-before-deploying-0123456789}
+      JWT_TTL: ${JWT_TTL:-12h}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin12345}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+      MINIO_BUCKET: ${MINIO_BUCKET:-diplay-media}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-5}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      # Trust X-Forwarded-For only from the private Docker network (the nginx container),
+      # so the login rate limiter sees real client IPs and cannot be spoofed from outside.
+      TRUSTED_PROXIES: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    ports:
+      # Handy for curl/Postman with a Bearer token; bound to localhost only.
+      - "127.0.0.1:8080:8080"
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-3000}:80"
+
+volumes:
+  pgdata:
+  miniodata:

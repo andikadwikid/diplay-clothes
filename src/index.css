@@ -93,3 +93,10 @@ body {
     transition: none;
   }
 }
+
+.collection__status {
+  margin: 4rem 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
