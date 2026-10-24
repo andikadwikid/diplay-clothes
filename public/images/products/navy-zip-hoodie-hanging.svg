@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+<defs>
+
+<linearGradient id="gBody" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#192238" stop-opacity="1"/><stop offset="0.2" stop-color="#1f2a44" stop-opacity="1"/><stop offset="0.5" stop-color="#2f3951" stop-opacity="1"/><stop offset="0.8" stop-color="#1f2a44" stop-opacity="1"/><stop offset="1" stop-color="#182135" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gSleeve" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#182135" stop-opacity="1"/><stop offset="0.4" stop-color="#1d2841" stop-opacity="1"/><stop offset="1" stop-color="#182034" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gRib" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#171f32" stop-opacity="1"/><stop offset="0.5" stop-color="#1c263d" stop-opacity="1"/><stop offset="1" stop-color="#161e31" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gHood" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#1c263d" stop-opacity="1"/><stop offset="0.5" stop-color="#353f57" stop-opacity="1"/><stop offset="1" stop-color="#1b253c" stop-opacity="1"/>
+</linearGradient>
+<pattern id="rib" width="9" height="9" patternUnits="userSpaceOnUse">
+  <rect width="4" height="9" fill="#000" fill-opacity="0.11"/>
+</pattern>
+</defs>
+<path d="M345 140 C372 118 430 116 452 150 C470 180 474 230 476 300 C482 520 490 720 494 884 L318 892 C322 720 326 520 330 300 C332 230 330 180 345 140 Z"
+         fill="url(#gBody)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/>
+   <path d="M318 846 L494 838 L494 886 L318 892 Z" fill="url(#gRib)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/><path d="M318 846 L494 838 L494 886 L318 892 Z" fill="url(#rib)"/>
+     <path d="M404 84 C340 54 276 84 262 168 C250 250 270 318 322 372 L404 326 Z" fill="url(#gHood)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/>
+     <path d="M392 108 C336 92 296 128 288 196 C282 252 300 304 336 336" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="5" stroke-linecap="round"/>
+     <path d="M400 90 C430 96 452 130 452 160 C430 146 410 140 392 150 Z" fill="#131929"/>
+     <path d="M392 146 C436 146 470 190 474 260 C480 420 496 640 506 826 L424 842 C408 700 386 500 368 310 C362 240 368 178 392 146 Z"
+             fill="url(#gSleeve)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/>
+       <path d="M424 230 C430 400 448 600 462 780" fill="none" stroke="#000" stroke-opacity="0.09" stroke-width="5" stroke-linecap="round"/>
+       <path d="M420 790 L503 776 L507 828 L424 844 Z" fill="url(#gRib)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/><path d="M420 790 L503 776 L507 828 L424 844 Z" fill="url(#rib)"/>
+</svg>

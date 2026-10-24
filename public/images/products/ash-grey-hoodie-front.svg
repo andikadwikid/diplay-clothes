@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+<defs>
+
+<linearGradient id="gBody" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#8a8b8c" stop-opacity="1"/><stop offset="0.2" stop-color="#a8a9ab" stop-opacity="1"/><stop offset="0.5" stop-color="#aeafb1" stop-opacity="1"/><stop offset="0.8" stop-color="#a8a9ab" stop-opacity="1"/><stop offset="1" stop-color="#838485" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gSleeve" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#838485" stop-opacity="1"/><stop offset="0.4" stop-color="#a0a1a2" stop-opacity="1"/><stop offset="1" stop-color="#808082" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gRib" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#7c7d7f" stop-opacity="1"/><stop offset="0.5" stop-color="#97989a" stop-opacity="1"/><stop offset="1" stop-color="#797a7b" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gHood" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#97989a" stop-opacity="1"/><stop offset="0.5" stop-color="#b1b2b3" stop-opacity="1"/><stop offset="1" stop-color="#949596" stop-opacity="1"/>
+</linearGradient>
+<pattern id="rib" width="9" height="9" patternUnits="userSpaceOnUse">
+  <rect width="4" height="9" fill="#000" fill-opacity="0.11"/>
+</pattern>
+</defs>
+<path d="M240 172 C290 156 340 164 400 164 C460 164 510 156 560 172 L590 340 C596 520 598 700 590 872 L210 872 C202 700 204 520 210 340 Z"
+           fill="url(#gBody)" stroke="#767678" stroke-width="2" stroke-linejoin="round"/>
+     <path d="M210 836 L590 836 L592 894 L208 894 Z" fill="url(#gRib)" stroke="#767678" stroke-width="2" stroke-linejoin="round"/><path d="M210 836 L590 836 L592 894 L208 894 Z" fill="url(#rib)"/>
+     <path d="M290 590 L510 590 L536 792 L264 792 Z" fill="#000" fill-opacity="0.05" stroke="#767678" stroke-width="2" stroke-linejoin="round"/>
+       <path d="M290 590 L510 590" stroke="#bebfc0" stroke-width="3" stroke-opacity="0.7"/>
+       <text x="400" y="470" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="800" font-size="92" fill="#2b2b2d" textLength="236" lengthAdjust="spacingAndGlyphs">STUDIO</text>
+       <text x="400" y="512" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="400" font-size="24" fill="#2b2b2d" textLength="200" lengthAdjust="spacing">ORIGINAL</text>
+       <path d="M372 190 C370 240 366 290 366 340" stroke="#2b2b2d" stroke-width="7" stroke-linecap="round" fill="none"/>
+       <path d="M428 190 C430 240 434 290 434 340" stroke="#2b2b2d" stroke-width="7" stroke-linecap="round" fill="none"/>
+       <rect x="361" y="336" width="10" height="26" rx="4" fill="#545556"/>
+       <rect x="429" y="336" width="10" height="26" rx="4" fill="#545556"/>
+     
+    <path d="M242 170 C198 192 168 330 152 560 C144 680 142 780 140 868 L246 880 C248 780 254 690 264 600 C274 520 278 440 282 380 Z"
+          fill="url(#gSleeve)" stroke="#767678" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M205 300 C190 420 180 560 176 700" fill="none" stroke="#000" stroke-opacity="0.09" stroke-width="5" stroke-linecap="round"/>
+    <path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#gRib)" stroke="#767678" stroke-width="2" stroke-linejoin="round"/><path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#rib)"/><g transform="translate(800 0) scale(-1 1)">
+    <path d="M242 170 C198 192 168 330 152 560 C144 680 142 780 140 868 L246 880 C248 780 254 690 264 600 C274 520 278 440 282 380 Z"
+          fill="url(#gSleeve)" stroke="#767678" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M205 300 C190 420 180 560 176 700" fill="none" stroke="#000" stroke-opacity="0.09" stroke-width="5" stroke-linecap="round"/>
+    <path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#gRib)" stroke="#767678" stroke-width="2" stroke-linejoin="round"/><path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#rib)"/></g>
+     <path d="M298 168 C282 108 330 60 400 60 C470 60 518 108 502 168 C470 210 330 210 298 168 Z" fill="url(#gHood)" stroke="#767678" stroke-width="2" stroke-linejoin="round"/>
+     <path d="M336 150 C340 112 460 112 464 150 C440 180 360 180 336 150 Z" fill="#545556"/>
+     <path d="M298 168 C330 210 470 210 502 168" fill="none" stroke="#6d6e6f" stroke-width="3"/>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+<defs>
+
+<linearGradient id="gBody" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#b2aea3" stop-opacity="1"/><stop offset="0.2" stop-color="#d9d4c7" stop-opacity="1"/><stop offset="0.5" stop-color="#dcd7cb" stop-opacity="1"/><stop offset="0.8" stop-color="#d9d4c7" stop-opacity="1"/><stop offset="1" stop-color="#a9a59b" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gSleeve" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#a9a59b" stop-opacity="1"/><stop offset="0.4" stop-color="#cec9bd" stop-opacity="1"/><stop offset="1" stop-color="#a5a197" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gRib" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#a19d93" stop-opacity="1"/><stop offset="0.5" stop-color="#c3bfb3" stop-opacity="1"/><stop offset="1" stop-color="#9c998f" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gHood" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#c3bfb3" stop-opacity="1"/><stop offset="0.5" stop-color="#ddd8cd" stop-opacity="1"/><stop offset="1" stop-color="#bfbbaf" stop-opacity="1"/>
+</linearGradient>
+<pattern id="rib" width="9" height="9" patternUnits="userSpaceOnUse">
+  <rect width="4" height="9" fill="#000" fill-opacity="0.11"/>
+</pattern>
+</defs>
+<g transform="translate(0 -72)">
+       <path d="M244 152 C300 140 340 146 400 146 C460 146 500 140 556 152 L566 380 L560 840 L240 840 L234 380 Z"
+             fill="url(#gBody)" stroke="#98948b" stroke-width="2" stroke-linejoin="round"/>
+       <path d="M240.6 806 L559.4 806 L560 840 L240 840 Z" fill="#000" fill-opacity="0.08"/>
+       <text x="400" y="430" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="800" font-size="64" fill="#4a463d" textLength="200" lengthAdjust="spacingAndGlyphs">OUTDOOR</text>
+       <text x="400" y="468" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="400" font-size="18" fill="#4a463d" textLength="190" lengthAdjust="spacing">TRAILS &amp; WILDERNESS</text>
+       <path d="M300 520 C296 600 300 700 304 790" fill="none" stroke="#000" stroke-opacity="0.09" stroke-width="5" stroke-linecap="round"/>
+       
+    <path d="M246 150 C196 158 136 192 98 254 L168 404 C196 384 232 368 260 360 Z" fill="url(#gSleeve)" stroke="#98948b" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M98 254 L168 404 L186 394 L116 244 Z" fill="url(#gRib)" stroke="#98948b" stroke-width="2" stroke-linejoin="round"/><path d="M98 254 L168 404 L186 394 L116 244 Z" fill="url(#rib)"/><g transform="translate(800 0) scale(-1 1)">
+    <path d="M246 150 C196 158 136 192 98 254 L168 404 C196 384 232 368 260 360 Z" fill="url(#gSleeve)" stroke="#98948b" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M98 254 L168 404 L186 394 L116 244 Z" fill="url(#gRib)" stroke="#98948b" stroke-width="2" stroke-linejoin="round"/><path d="M98 254 L168 404 L186 394 L116 244 Z" fill="url(#rib)"/></g>
+       <path d="M338 147 C352 184 448 184 462 147 Z" fill="#625f5a"/>
+       <path d="M318 152 C336 206 464 206 482 152" fill="none" stroke="url(#gRib)" stroke-width="26" stroke-linecap="round"/>
+       <path d="M318 152 C336 206 464 206 482 152" fill="none" stroke="url(#rib)" stroke-width="26" stroke-linecap="round"/>
+     </g>
+</svg>

@@ -1,0 +1,95 @@
+:root {
+  --ink: #111;
+  --muted: #5b5b58;
+  --wall: #f4f4f2;
+  color-scheme: light;
+  font-family: 'Helvetica Neue', Helvetica, Arial, 'Segoe UI', system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  color: var(--ink);
+  background: radial-gradient(120% 90% at 50% 0%, #fff 0%, var(--wall) 65%, #ecece9 100%) fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.site-header {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1rem 0;
+}
+
+.wordmark {
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.collection {
+  padding: clamp(1.5rem, 5vw, 3.5rem) 0 clamp(2rem, 6vw, 4rem);
+}
+
+.eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  margin: 0 1rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.eyebrow span + span {
+  padding-left: 1rem;
+  border-left: 1px solid rgb(0 0 0 / 0.25);
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.pill-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1.75rem;
+  border: 1px solid rgb(0 0 0 / 0.2);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.6);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  text-decoration: none;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.pill-link:hover {
+  border-color: var(--ink);
+  background: #fff;
+}
+
+.pill-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.wordmark:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill-link {
+    transition: none;
+  }
+}

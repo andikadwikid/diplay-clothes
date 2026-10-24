@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+<defs>
+
+<linearGradient id="gBody" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#192238" stop-opacity="1"/><stop offset="0.2" stop-color="#1f2a44" stop-opacity="1"/><stop offset="0.5" stop-color="#2f3951" stop-opacity="1"/><stop offset="0.8" stop-color="#1f2a44" stop-opacity="1"/><stop offset="1" stop-color="#182135" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gSleeve" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#182135" stop-opacity="1"/><stop offset="0.4" stop-color="#1d2841" stop-opacity="1"/><stop offset="1" stop-color="#182034" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gRib" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#171f32" stop-opacity="1"/><stop offset="0.5" stop-color="#1c263d" stop-opacity="1"/><stop offset="1" stop-color="#161e31" stop-opacity="1"/>
+</linearGradient>
+<linearGradient id="gHood" x1="0" x2="1" y1="0" y2="0">
+  <stop offset="0" stop-color="#1c263d" stop-opacity="1"/><stop offset="0.5" stop-color="#353f57" stop-opacity="1"/><stop offset="1" stop-color="#1b253c" stop-opacity="1"/>
+</linearGradient>
+<pattern id="rib" width="9" height="9" patternUnits="userSpaceOnUse">
+  <rect width="4" height="9" fill="#000" fill-opacity="0.11"/>
+</pattern>
+</defs>
+<path d="M240 172 C290 156 340 164 400 164 C460 164 510 156 560 172 L590 340 C596 520 598 700 590 872 L210 872 C202 700 204 520 210 340 Z"
+           fill="url(#gBody)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/>
+     <path d="M210 836 L590 836 L592 894 L208 894 Z" fill="url(#gRib)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/><path d="M210 836 L590 836 L592 894 L208 894 Z" fill="url(#rib)"/>
+     <path d="M400 200 L400 894" stroke="#131929" stroke-width="5"/>
+       <path d="M400 206 L400 888" stroke="#d6d6d6" stroke-width="7" stroke-dasharray="3 5"/>
+       <rect x="391" y="214" width="18" height="40" rx="5" fill="#cfcfcf" stroke="#777" stroke-width="2"/>
+       <path d="M262 660 L290 800" stroke="#141b2c" stroke-width="4" stroke-linecap="round"/>
+       <path d="M538 660 L510 800" stroke="#141b2c" stroke-width="4" stroke-linecap="round"/>
+       <text x="474" y="392" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="800" font-size="22" fill="#d9dbe3" textLength="74" lengthAdjust="spacing">DIPLAY</text>
+     
+    <path d="M242 170 C198 192 168 330 152 560 C144 680 142 780 140 868 L246 880 C248 780 254 690 264 600 C274 520 278 440 282 380 Z"
+          fill="url(#gSleeve)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M205 300 C190 420 180 560 176 700" fill="none" stroke="#000" stroke-opacity="0.09" stroke-width="5" stroke-linecap="round"/>
+    <path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#gRib)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/><path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#rib)"/><g transform="translate(800 0) scale(-1 1)">
+    <path d="M242 170 C198 192 168 330 152 560 C144 680 142 780 140 868 L246 880 C248 780 254 690 264 600 C274 520 278 440 282 380 Z"
+          fill="url(#gSleeve)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M205 300 C190 420 180 560 176 700" fill="none" stroke="#000" stroke-opacity="0.09" stroke-width="5" stroke-linecap="round"/>
+    <path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#gRib)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/><path d="M140 832 L246 844 L248 892 L138 882 Z" fill="url(#rib)"/></g>
+     <path d="M298 168 C282 108 330 60 400 60 C470 60 518 108 502 168 C470 210 330 210 298 168 Z" fill="url(#gHood)" stroke="#161d30" stroke-width="2" stroke-linejoin="round"/>
+     <path d="M336 150 C340 112 460 112 464 150 C440 180 360 180 336 150 Z" fill="#101522"/>
+     <path d="M298 168 C330 210 470 210 502 168" fill="none" stroke="#141b2c" stroke-width="3"/>
+</svg>
