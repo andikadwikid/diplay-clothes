@@ -85,6 +85,13 @@ export default function CatalogPage() {
     document.getElementById('cat-results')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
+  // The banner's claim is computed from the data, so it can never promise more than the badges show.
+  const maxSale = Math.max(0, ...products.map((p) => p.sale ?? 0));
+  const shopSale = () => {
+    update({ sort: 'discount' });
+    document.getElementById('cat-results')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  };
+
   const split = columns * 2;
   const head = results.slice(0, split);
   const tail = results.slice(split);
@@ -110,7 +117,7 @@ export default function CatalogPage() {
               ref={searchRef}
               type="search"
               name="q"
-              placeholder="Search Products..."
+              placeholder="Search the catalog"
               aria-label="Search products"
               autoComplete="off"
               value={filters.q}
@@ -157,7 +164,7 @@ export default function CatalogPage() {
                   <ProductCard key={p.id} product={p} />
                 ))}
               </ul>
-              <PromoBanner />
+              <PromoBanner maxSale={maxSale} onShop={shopSale} />
               {tail.length > 0 && (
                 <ul className="cat-grid" aria-label="More products">
                   {tail.map((p) => (

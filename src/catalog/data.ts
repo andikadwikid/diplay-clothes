@@ -4,7 +4,7 @@
  * your API (the shape is `CatalogProduct`) and the rest of the page keeps working.
  */
 
-export type DepartmentId = 'electronics' | 'self-care' | 'fashion' | 'grocery' | 'bags' | 'accessories';
+export type DepartmentId = 'fashion' | 'bags' | 'accessories' | 'home' | 'electronics' | 'grocery';
 export type CategoryId = 'fashion' | 'watches' | 'bags' | 'electronic' | 'food' | 'home';
 export type TypeId =
   | 'jeans' | 'trousers' | 'tshirt' | 'polo' | 'jackets' | 'shirts' | 'tops' | 'hoodie' | 'parka'
@@ -32,34 +32,34 @@ export interface CatalogProduct {
 }
 
 export const DEPARTMENTS: readonly { id: DepartmentId; label: string }[] = [
-  { id: 'electronics', label: 'Electronics' },
-  { id: 'self-care', label: 'Self Care' },
-  { id: 'fashion', label: 'Fashion' },
-  { id: 'grocery', label: 'Grocery' },
+  { id: 'fashion', label: 'Apparel' },
   { id: 'bags', label: 'Bags' },
   { id: 'accessories', label: 'Accessories' },
+  { id: 'home', label: 'Home' },
+  { id: 'electronics', label: 'Tech' },
+  { id: 'grocery', label: 'Pantry' },
 ];
 
 export const CATEGORIES: readonly { id: CategoryId; label: string }[] = [
-  { id: 'fashion', label: 'Fashion & Clothing' },
-  { id: 'watches', label: 'Watches & Jewelry' },
-  { id: 'bags', label: 'Bags & Accessories' },
-  { id: 'electronic', label: 'Electronic Products' },
-  { id: 'food', label: 'Food & Grocery' },
-  { id: 'home', label: 'Home & Furniture' },
+  { id: 'fashion', label: 'Clothing' },
+  { id: 'bags', label: 'Bags' },
+  { id: 'watches', label: 'Watches' },
+  { id: 'home', label: 'Home & Living' },
+  { id: 'electronic', label: 'Tech & Audio' },
+  { id: 'food', label: 'Pantry' },
 ];
 
 /** Order here is the order of the type tabs. */
 export const TYPES: readonly { id: TypeId; label: string }[] = [
-  { id: 'jeans', label: 'Jeans Pants' },
-  { id: 'trousers', label: 'Trousers' },
-  { id: 'tshirt', label: 'T-shirt' },
-  { id: 'polo', label: 'Polo shirt' },
   { id: 'jackets', label: 'Jackets' },
+  { id: 'parka', label: 'Parkas' },
+  { id: 'hoodie', label: 'Hoodies' },
+  { id: 'tops', label: 'Sweatshirts' },
+  { id: 'tshirt', label: 'Tees' },
+  { id: 'polo', label: 'Polos' },
   { id: 'shirts', label: 'Shirts' },
-  { id: 'tops', label: 'Tops' },
-  { id: 'hoodie', label: 'Hoodie' },
-  { id: 'parka', label: 'Parka' },
+  { id: 'jeans', label: 'Jeans' },
+  { id: 'trousers', label: 'Trousers' },
   { id: 'tote', label: 'Totes' },
   { id: 'backpack', label: 'Backpacks' },
   { id: 'watch', label: 'Watches' },
@@ -93,36 +93,36 @@ const rack = (slug: string) => `/images/products/${slug}-front.svg`;
 type Seed = Omit<CatalogProduct, 'id' | 'href'>;
 
 const seeds: Seed[] = [
-  // ---- Fashion & Clothing
-  { name: 'Frost Denim Jacket', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'women', color: 'blue', brand: 'Nordlane', price: 89, sale: 12, rating: 4.9, reviews: 124, image: img('denim-jacket') },
-  { name: 'Arctic Wool Coat', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'women', color: 'grey', brand: 'Atelier 9', price: 95, sale: 18, rating: 4.9, reviews: 156, image: img('wool-coat') },
-  { name: 'Ivory Sherpa Jacket', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'women', color: 'beige', brand: 'Oakhaus', price: 92, sale: 15, rating: 4.9, reviews: 156, image: img('sherpa-jacket') },
-  { name: 'Vintage Denim Bomber', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'men', color: 'blue', brand: 'Nordlane', price: 85, sale: 22, rating: 4.7, reviews: 112, image: img('denim-bomber') },
-  { name: 'Polar Puffer Jacket', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'unisex', color: 'white', brand: 'Oakhaus', price: 99, sale: 12, rating: 4.9, reviews: 187, image: img('puffer-jacket') },
-  { name: 'Urban Zip Hoodie', department: 'fashion', category: 'fashion', type: 'hoodie', gender: 'unisex', color: 'blue', brand: 'Kobo', price: 79, sale: 18, rating: 4.8, reviews: 143, image: rack('navy-zip-hoodie') },
-  { name: 'Ash Grey Hoodie', department: 'fashion', category: 'fashion', type: 'hoodie', gender: 'men', color: 'grey', brand: 'Kobo', price: 69, rating: 4.6, reviews: 98, image: rack('ash-grey-hoodie') },
-  { name: 'Forest Green Hoodie', department: 'fashion', category: 'fashion', type: 'hoodie', gender: 'unisex', color: 'green', brand: 'Kobo', price: 75, sale: 10, rating: 4.8, reviews: 210, image: rack('forest-green-hoodie') },
-  { name: 'Jet Black Tee', department: 'fashion', category: 'fashion', type: 'tshirt', gender: 'unisex', color: 'black', brand: 'Fieldwork', price: 35, rating: 4.7, reviews: 321, image: rack('jet-black-tee') },
-  { name: 'Outdoor Graphic Tee', department: 'fashion', category: 'fashion', type: 'tshirt', gender: 'men', color: 'white', brand: 'Fieldwork', price: 39, sale: 20, rating: 4.5, reviews: 87, image: rack('bone-boxy-tee') },
-  { name: 'Classic Cream Crewneck', department: 'fashion', category: 'fashion', type: 'tops', gender: 'women', color: 'beige', brand: 'Maison Rue', price: 64, rating: 4.8, reviews: 164, image: rack('cream-crewneck') },
-  { name: 'Rosewood Crewneck', department: 'fashion', category: 'fashion', type: 'tops', gender: 'women', color: 'pink', brand: 'Maison Rue', price: 68, sale: 15, rating: 4.7, reviews: 76, image: rack('rosewood-crewneck') },
-  { name: 'Straight Fit Jeans', department: 'fashion', category: 'fashion', type: 'jeans', gender: 'men', color: 'blue', brand: 'Nordlane', price: 72, sale: 10, rating: 4.6, reviews: 245, image: img('straight-jeans') },
-  { name: 'Pleated Wool Trousers', department: 'fashion', category: 'fashion', type: 'trousers', gender: 'men', color: 'beige', brand: 'Atelier 9', price: 88, rating: 4.7, reviews: 133, image: img('wool-trousers') },
-  { name: 'Oxford Button-Down', department: 'fashion', category: 'fashion', type: 'shirts', gender: 'men', color: 'blue', brand: 'Maison Rue', price: 58, rating: 4.6, reviews: 92, image: img('oxford-shirt') },
-  { name: 'Piqué Polo', department: 'fashion', category: 'fashion', type: 'polo', gender: 'men', color: 'green', brand: 'Studio Lune', price: 52, sale: 25, rating: 4.5, reviews: 61, image: img('pique-polo') },
-  { name: 'Expedition Parka', department: 'fashion', category: 'fashion', type: 'parka', gender: 'unisex', color: 'green', brand: 'Fieldwork', price: 149, sale: 12, rating: 4.9, reviews: 98, image: img('expedition-parka') },
-  // ---- Bags & Accessories
-  { name: 'Market Canvas Tote', department: 'bags', category: 'bags', type: 'tote', gender: 'unisex', color: 'beige', brand: 'Studio Lune', price: 34, rating: 4.8, reviews: 410, image: img('market-tote') },
-  { name: 'Weekender Backpack', department: 'bags', category: 'bags', type: 'backpack', gender: 'unisex', color: 'green', brand: 'Fieldwork', price: 119, sale: 18, rating: 4.7, reviews: 143, image: img('weekender-backpack') },
-  // ---- Watches & Jewelry
-  { name: 'Steel Chronograph', department: 'accessories', category: 'watches', type: 'watch', gender: 'men', color: 'brown', brand: 'Maison Rue', price: 189, sale: 15, rating: 4.8, reviews: 76, image: img('steel-watch') },
-  // ---- Electronic Products
-  { name: 'Studio Headphones', department: 'electronics', category: 'electronic', type: 'headphones', gender: 'unisex', color: 'black', brand: 'Kobo', price: 159, sale: 20, rating: 4.6, reviews: 512, image: img('studio-headphones') },
-  // ---- Food & Grocery
-  { name: 'Single-Origin Coffee 250 g', department: 'grocery', category: 'food', type: 'coffee', gender: 'unisex', color: 'brown', brand: 'Oakhaus', price: 18, rating: 4.9, reviews: 804, image: img('single-origin-coffee') },
-  // ---- Home & Furniture
-  { name: 'Cedar & Fig Candle', department: 'self-care', category: 'home', type: 'candle', gender: 'unisex', color: 'white', brand: 'Studio Lune', price: 28, sale: 10, rating: 4.8, reviews: 233, image: img('soy-candle') },
-  { name: 'Arc Floor Lamp', department: 'self-care', category: 'home', type: 'lighting', gender: 'unisex', color: 'white', brand: 'Studio Lune', price: 139, rating: 4.5, reviews: 58, image: img('arc-floor-lamp') },
+  // ---- Clothing
+  { name: 'Indigo Trucker Jacket', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'women', color: 'blue', brand: 'Nordlane', price: 98, sale: 15, rating: 4.7, reviews: 86, image: img('denim-jacket') },
+  { name: 'Slate Fleece-Collar Coat', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'women', color: 'grey', brand: 'Atelier 9', price: 119, sale: 10, rating: 4.6, reviews: 64, image: img('wool-coat') },
+  { name: 'Dune Shearling Jacket', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'women', color: 'beige', brand: 'Oakhaus', price: 134, sale: 25, rating: 4.8, reviews: 52, image: img('sherpa-jacket') },
+  { name: 'Harbor Colorblock Bomber', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'men', color: 'blue', brand: 'Nordlane', price: 91, sale: 30, rating: 4.4, reviews: 47, image: img('denim-bomber') },
+  { name: 'Cloud Quilted Jacket', department: 'fashion', category: 'fashion', type: 'jackets', gender: 'unisex', color: 'white', brand: 'Oakhaus', price: 108, sale: 12, rating: 4.8, reviews: 203, image: img('puffer-jacket') },
+  { name: 'Midnight Zip Hoodie', department: 'fashion', category: 'fashion', type: 'hoodie', gender: 'unisex', color: 'blue', brand: 'Kobo', price: 76, rating: 4.6, reviews: 131, image: rack('navy-zip-hoodie') },
+  { name: 'Storm Pullover Hoodie', department: 'fashion', category: 'fashion', type: 'hoodie', gender: 'men', color: 'grey', brand: 'Kobo', price: 66, sale: 10, rating: 4.5, reviews: 77, image: rack('ash-grey-hoodie') },
+  { name: 'Pine Heavyweight Hoodie', department: 'fashion', category: 'fashion', type: 'hoodie', gender: 'unisex', color: 'green', brand: 'Kobo', price: 82, sale: 18, rating: 4.9, reviews: 176, image: rack('forest-green-hoodie') },
+  { name: 'Noir Boxy Tee', department: 'fashion', category: 'fashion', type: 'tshirt', gender: 'unisex', color: 'black', brand: 'Fieldwork', price: 32, rating: 4.6, reviews: 358, image: rack('jet-black-tee') },
+  { name: 'Bone Pocket Tee', department: 'fashion', category: 'fashion', type: 'tshirt', gender: 'men', color: 'white', brand: 'Fieldwork', price: 36, sale: 15, rating: 4.3, reviews: 69, image: rack('bone-boxy-tee') },
+  { name: 'Oat Crewneck Sweatshirt', department: 'fashion', category: 'fashion', type: 'tops', gender: 'women', color: 'beige', brand: 'Maison Rue', price: 58, rating: 4.7, reviews: 142, image: rack('cream-crewneck') },
+  { name: 'Dusty Rose Crewneck', department: 'fashion', category: 'fashion', type: 'tops', gender: 'women', color: 'pink', brand: 'Maison Rue', price: 62, sale: 20, rating: 4.5, reviews: 58, image: rack('rosewood-crewneck') },
+  { name: 'Raw Indigo Straight Jeans', department: 'fashion', category: 'fashion', type: 'jeans', gender: 'men', color: 'blue', brand: 'Nordlane', price: 78, sale: 12, rating: 4.5, reviews: 219, image: img('straight-jeans') },
+  { name: 'Sand Pleated Trousers', department: 'fashion', category: 'fashion', type: 'trousers', gender: 'men', color: 'beige', brand: 'Atelier 9', price: 92, rating: 4.6, reviews: 118, image: img('wool-trousers') },
+  { name: 'Chambray Work Shirt', department: 'fashion', category: 'fashion', type: 'shirts', gender: 'men', color: 'blue', brand: 'Maison Rue', price: 54, rating: 4.4, reviews: 88, image: img('oxford-shirt') },
+  { name: 'Piqué Court Polo', department: 'fashion', category: 'fashion', type: 'polo', gender: 'men', color: 'green', brand: 'Studio Lune', price: 48, sale: 22, rating: 4.3, reviews: 54, image: img('pique-polo') },
+  { name: 'Ridge Field Parka', department: 'fashion', category: 'fashion', type: 'parka', gender: 'unisex', color: 'green', brand: 'Fieldwork', price: 158, sale: 10, rating: 4.8, reviews: 91, image: img('expedition-parka') },
+  // ---- Bags
+  { name: 'Everyday Canvas Tote', department: 'bags', category: 'bags', type: 'tote', gender: 'unisex', color: 'beige', brand: 'Studio Lune', price: 29, rating: 4.7, reviews: 388, image: img('market-tote') },
+  { name: 'Trailhead Daypack', department: 'bags', category: 'bags', type: 'backpack', gender: 'unisex', color: 'green', brand: 'Fieldwork', price: 112, sale: 15, rating: 4.6, reviews: 126, image: img('weekender-backpack') },
+  // ---- Watches
+  { name: 'Field Chronograph Watch', department: 'accessories', category: 'watches', type: 'watch', gender: 'men', color: 'brown', brand: 'Maison Rue', price: 176, sale: 10, rating: 4.7, reviews: 69, image: img('steel-watch') },
+  // ---- Tech & Audio
+  { name: 'Wireless Over-Ear Headphones', department: 'electronics', category: 'electronic', type: 'headphones', gender: 'unisex', color: 'black', brand: 'Kobo', price: 139, sale: 25, rating: 4.5, reviews: 440, image: img('studio-headphones') },
+  // ---- Pantry
+  { name: 'Ethiopia Light Roast 250 g', department: 'grocery', category: 'food', type: 'coffee', gender: 'unisex', color: 'brown', brand: 'Oakhaus', price: 16, rating: 4.8, reviews: 695, image: img('single-origin-coffee') },
+  // ---- Home & Living
+  { name: 'Amber Soy Candle', department: 'home', category: 'home', type: 'candle', gender: 'unisex', color: 'white', brand: 'Studio Lune', price: 24, rating: 4.7, reviews: 189, image: img('soy-candle') },
+  { name: 'Curve Floor Lamp', department: 'home', category: 'home', type: 'lighting', gender: 'unisex', color: 'white', brand: 'Studio Lune', price: 129, rating: 4.4, reviews: 51, image: img('arc-floor-lamp') },
 ];
 
 export const catalog: readonly CatalogProduct[] = seeds.map((seed, index) => ({

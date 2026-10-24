@@ -1,6 +1,6 @@
 import { DEPARTMENTS } from './data';
 import type { DepartmentId } from './data';
-import { ChevronsRight } from './Icons';
+import { ArrowUpRight } from './Icons';
 
 interface Props {
   active: DepartmentId | null;
@@ -18,7 +18,7 @@ export function DepartmentStrip({ active, onPick }: Props) {
             <li key={d.id}>
               <button type="button" aria-pressed={on} onClick={() => onPick(on ? null : d.id)}>
                 <span>{d.label}</span>
-                <ChevronsRight />
+                <ArrowUpRight />
               </button>
             </li>
           );

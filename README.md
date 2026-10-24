@@ -274,7 +274,9 @@ TEST_DATABASE_URL='postgres://diplay:diplay_dev_password@127.0.0.1:5432/postgres
 
 `/catalog` is a product catalog laid out as a hairline grid: header, department strip, hero, a
 search + product-type row, a filter column and a three-column grid with a promo banner after the
-second row. It is a separate, lazily loaded chunk (like the admin panel), so rack visitors do not
+second row. The layout is the common shop-catalog pattern; the look is this project's own: warm
+paper background, one forest-green accent for every "active" state (checked boxes, open
+department, price range, sale tags, promo), serif headings, products on soft tiles. It is a separate, lazily loaded chunk (like the admin panel), so rack visitors do not
 download it. "Shop the Collection" on the rack page links to it.
 
 | Part | Behaviour |
@@ -290,9 +292,15 @@ names, prices, ratings, brands and the "Sale n%" badges are placeholders. The fi
 (`filters.ts`) is pure and only sees that array, so to use real products make `useCatalog` take
 them from an API instead of the constant. The Go backend does not serve catalog data yet.
 
+**Look.** All colours are custom properties at the top of `src/catalog/catalog.css`
+(`--accent`, `--bg`, `--tile`, …), so re-theming the page is a matter of changing a few values.
+Headings use a system serif stack (`--serif`), so no web font is loaded. The promo seal states
+the largest discount found in the data (`maxSale`), so it can never promise more than the sale
+tags on the cards show, and "Shop the sale" sorts by biggest discount.
+
 **Artwork.** All product pictures are SVGs drawn by `scripts/generate-catalog-images.mjs`
 (`npm run catalog-images`; hoodies, tees and crewnecks reuse the rack artwork). The promo picture
-is an illustration, not a photo. Replace the files (or the `image` field) with real photography
+is a composition of the same artwork, not a photo. Replace the files (or the `image` field) with real photography
 at any time; cards use `object-fit: contain`, so 600×500 landscape and portrait images both fit.
 
 **Known limitations.**

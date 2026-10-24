@@ -35,7 +35,7 @@ export function SiteHeader({ menuOpen, onMenuToggle, onSearch, onPickDepartment 
         </button>
 
         <a className="cat-header__logo" href="/" aria-label="Diplay home">
-          DIPLAY
+          Diplay
         </a>
 
         <div className="cat-header__actions">

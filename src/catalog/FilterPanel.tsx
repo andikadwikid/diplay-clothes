@@ -123,7 +123,7 @@ export function FilterPanel({
           icon={<AllIcon className="cat-check__icon" />}
           onChange={() => update({ categories: [] })}
         >
-          All Product
+          All products
         </Check>
         {CATEGORIES.map((c) => {
           const Icon = CATEGORY_ICONS[c.id];
@@ -152,7 +152,7 @@ export function FilterPanel({
         })}
       </Section>
 
-      <Section title="Colors" open={sections.colors} onToggle={() => flip('colors')}>
+      <Section title="Color" open={sections.colors} onToggle={() => flip('colors')}>
         <div className="cat-swatches">
           {COLORS.map((c) => {
             const n = colorCounts.get(c.id) ?? 0;
@@ -174,7 +174,7 @@ export function FilterPanel({
         </div>
       </Section>
 
-      <Section title="Brands" open={sections.brands} onToggle={() => flip('brands')}>
+      <Section title="Brand" open={sections.brands} onToggle={() => flip('brands')}>
         {brands.map((b) => {
           const n = brandCounts.get(b) ?? 0;
           const on = filters.brands.includes(b);
@@ -186,7 +186,7 @@ export function FilterPanel({
         })}
       </Section>
 
-      <Section title="Price Range" open={sections.price} onToggle={() => flip('price')}>
+      <Section title="Price" open={sections.price} onToggle={() => flip('price')}>
         <PriceRange
           bounds={bounds}
           histogram={histogram}

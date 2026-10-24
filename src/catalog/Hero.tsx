@@ -16,19 +16,19 @@ interface Props {
 
 export function Hero({ isMobile, filtersOpen, onToggleFilters, sort, onSort, count, filterButtonRef }: Props) {
   const current = SORTS.find((s) => s.id === sort);
-  const filterLabel = isMobile ? 'Filter' : filtersOpen ? 'Hide Filter' : 'Show Filter';
+  const filterLabel = isMobile ? 'Filters' : filtersOpen ? 'Hide filters' : 'Show filters';
 
   return (
     <section className="cat-hero" aria-labelledby="cat-title">
-      <p className="cat-hero__lede">
-        Explore premium quality, exclusive collections, and timeless styles crafted to complement your everyday lifestyle
-        perfectly.
-      </p>
       <h1 id="cat-title" className="cat-hero__title">
-        Premium Style
+        Everyday pieces,
         <br />
-        For Modern Living.
+        made to be kept.
       </h1>
+      <p className="cat-hero__lede">
+        Wardrobe staples and a few home essentials in honest materials and easy shapes. Browse the whole shelf, or
+        narrow it down with the filters.
+      </p>
 
       <div className="cat-hero__actions">
         <p className="cat-count" role="status" aria-live="polite">
@@ -49,7 +49,7 @@ export function Hero({ isMobile, filtersOpen, onToggleFilters, sort, onSort, cou
 
         {/* A real <select> sits invisibly over the button: native keyboard, screen-reader and mobile-picker behaviour. */}
         <label className="cat-btn cat-btn--solid cat-sort">
-          <span>{sort === 'featured' ? 'Sort By' : current?.label}</span>
+          <span>{sort === 'featured' ? 'Sort by' : current?.label}</span>
           <ChevronDown />
           <select aria-label="Sort products" value={sort} onChange={(e) => onSort(e.target.value as SortKey)}>
             {SORTS.map((s) => (

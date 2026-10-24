@@ -27,6 +27,7 @@ export const SearchIcon = (p: P) => <Icon {...p}><circle cx="11" cy="11" r="6.5"
 export const UserIcon = (p: P) => <Icon {...p}><circle cx="12" cy="8" r="3.6" /><path d="M5.5 20c.6-3.6 3.2-5.4 6.5-5.4s5.9 1.8 6.5 5.4z" /></Icon>;
 export const BagIcon = (p: P) => <Icon {...p}><path d="M6 8h12l1 12H5z" /><path d="M9 8V6.5a3 3 0 0 1 6 0V8" /></Icon>;
 export const ChevronsRight = (p: P) => <Icon {...p}><path d="m7 6 6 6-6 6M12.5 6l6 6-6 6" /></Icon>;
+export const ArrowUpRight = (p: P) => <Icon {...p}><path d="M7 17 17 7M9 7h8v8" /></Icon>;
 export const ChevronUp = (p: P) => <Icon {...p}><path d="m6 14 6-6 6 6" /></Icon>;
 export const ChevronDown = (p: P) => <Icon {...p}><path d="m6 10 6 6 6-6" /></Icon>;
 export const SlidersIcon = (p: P) => <Icon {...p}><path d="M4 8h9M17 8h3M4 16h3M11 16h9" /><circle cx="15" cy="8" r="2" /><circle cx="9" cy="16" r="2" /></Icon>;
