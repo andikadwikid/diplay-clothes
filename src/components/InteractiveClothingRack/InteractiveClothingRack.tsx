@@ -1,7 +1,8 @@
-import { useCallback, useRef, useState } from 'react';
-import type { CSSProperties, MouseEvent, PointerEvent } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { CSSProperties, KeyboardEvent, MouseEvent, PointerEvent } from 'react';
 import { Hanger } from './Hanger';
 import type { InteractiveClothingRackProps, RackProduct } from './types';
+import { useDragScroll } from './useDragScroll';
 import './InteractiveClothingRack.css';
 
 /** Every product image is a transparent 4:5 canvas, so the layout can be sized up front. */
@@ -23,6 +24,11 @@ const describe = (product: RackProduct) =>
  * Hit areas are equal-width slots that never move; only the artwork inside
  * them animates. That keeps hover stable (no flicker as neighbours slide) and
  * means the nearest hanger always wins.
+ *
+ * With more pieces than fit, the rail scrolls: drag it with the mouse (it
+ * glides on release), swipe it on touch, use the arrow keys, or the wheel.
+ * Everything rests in its hanging pose while the rack moves, and the piece
+ * under the pointer turns round once it stops.
  */
 export function InteractiveClothingRack({
   products,
@@ -38,6 +44,10 @@ export function InteractiveClothingRack({
   // (which also activates) fires before `click`, so state alone can't tell us.
   const wasActiveOnPress = useRef(false);
 
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLSpanElement>(null);
+  const [scrollable, setScrollable] = useState(false);
+
   const activeIndex = products.findIndex((product) => product.id === activeId);
 
   const activate = useCallback((id: string) => setActiveId(id), []);
@@ -46,13 +56,57 @@ export function InteractiveClothingRack({
     [],
   );
 
-  const revealSlot = useCallback((id: string) => {
-    slots.current.get(id)?.scrollIntoView({
-      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-      inline: 'center',
-      block: 'nearest',
-    });
-  }, []);
+  const drag = useDragScroll(scrollerRef, {
+    // Everything goes back to its hanging pose while the rack is being moved...
+    onDragStart: () => setActiveId(null),
+    // ...and the piece under the pointer turns round once it has stopped.
+    onSettle: (point) => {
+      if (!point) return;
+      const under = document.elementFromPoint(point.x, point.y);
+      if (!under || !scrollerRef.current?.contains(under)) return;
+      const id = under.closest<HTMLElement>('[data-product-id]')?.dataset.productId;
+      if (id) setActiveId(id);
+    },
+  });
+  const { stop: stopDrag } = drag;
+
+  // Track whether the rail overflows, and drive the position indicator.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const update = () => {
+      const max = el.scrollWidth - el.clientWidth;
+      setScrollable(max > 1);
+      const thumb = thumbRef.current;
+      if (!thumb) return;
+      const width = Math.min(0.7, Math.max(0.3, el.clientWidth / el.scrollWidth));
+      const progress = max > 0 ? el.scrollLeft / max : 0;
+      thumb.style.width = `${width * 100}%`;
+      // translateX is relative to the thumb itself, hence (1 / width - 1).
+      thumb.style.transform = `translateX(${progress * (1 / width - 1) * 100}%)`;
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    return () => {
+      el.removeEventListener('scroll', update);
+      observer.disconnect();
+    };
+  }, [products.length]);
+
+  const revealSlot = useCallback(
+    (id: string) => {
+      stopDrag(); // don't fight a glide that is still running
+      slots.current.get(id)?.scrollIntoView({
+        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    },
+    [stopDrag],
+  );
 
   const step = (direction: 1 | -1) => {
     if (products.length === 0) return;
@@ -73,21 +127,42 @@ export function InteractiveClothingRack({
     if (!product.href) activate(product.id);
   };
 
+  /** Arrow keys / Home / End move focus along the rail and bring that piece into view. */
+  const handleListKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    const hits = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('.rack__hit'));
+    const current = hits.indexOf(document.activeElement as HTMLElement);
+    if (current === -1) return;
+
+    const last = hits.length - 1;
+    const target =
+      event.key === 'Home' ? 0
+      : event.key === 'End' ? last
+      : Math.min(last, Math.max(0, current + (event.key === 'ArrowRight' ? 1 : -1)));
+    if (target === current) return;
+
+    event.preventDefault();
+    hits[target].focus({ preventScroll: true });
+    revealSlot(products[target].id);
+  };
+
   return (
     <div
       role="group"
       className={['rack', className].filter(Boolean).join(' ')}
       aria-label={label}
       data-has-active={activeIndex !== -1}
+      data-scrollable={scrollable}
+      data-dragging={drag.dragging}
       style={{ '--count': products.length } as CSSProperties}
       onKeyDown={() => {
         lastInput.current = 'keyboard';
       }}
     >
-      <div className="rack__scroller">
+      <div className="rack__scroller" ref={scrollerRef}>
         <div className="rack__track">
           <div className="rack__rail" aria-hidden="true" />
-          <ul className="rack__list" role="list">
+          <ul className="rack__list" role="list" onKeyDown={handleListKeyDown}>
             {products.map((product, index) => {
               const isActive = index === activeIndex;
               const dir = activeIndex === -1 ? 0 : Math.sign(index - activeIndex);
@@ -100,7 +175,8 @@ export function InteractiveClothingRack({
                   wasActiveOnPress.current = isActive;
                 },
                 onPointerEnter: (event: PointerEvent<HTMLElement>) => {
-                  if (event.pointerType !== 'touch') activate(product.id);
+                  // While the rack is being dragged or gliding, everything stays at rest.
+                  if (event.pointerType !== 'touch' && !drag.moving.current) activate(product.id);
                 },
                 onPointerLeave: (event: PointerEvent<HTMLElement>) => {
                   if (event.pointerType !== 'touch') deactivate(product.id);
@@ -153,6 +229,7 @@ export function InteractiveClothingRack({
                 <li
                   key={product.id}
                   className="rack__slot"
+                  data-product-id={product.id}
                   data-active={isActive}
                   style={{ '--dir': dir } as CSSProperties}
                   ref={(node) => {
@@ -161,7 +238,7 @@ export function InteractiveClothingRack({
                   }}
                 >
                   {product.href ? (
-                    <a href={product.href} {...shared}>
+                    <a href={product.href} draggable={false} {...shared}>
                       {piece}
                     </a>
                   ) : (
@@ -174,6 +251,10 @@ export function InteractiveClothingRack({
             })}
           </ul>
         </div>
+      </div>
+
+      <div className="rack__progress" aria-hidden="true" hidden={!scrollable}>
+        <span className="rack__progress-thumb" ref={thumbRef} />
       </div>
 
       <div className="rack__footer">

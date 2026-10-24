@@ -284,14 +284,27 @@ Everything is CSS + one inline SVG — no image is needed for the hardware.
 - **Leave** reverses everything with the same transitions.
 - **Caption:** the idle text and every product name share one grid cell and cross-fade, so changing text never shifts layout.
 - **Keyboard:** products are real `<a>`/`<button>` elements in a list. Focus activates a piece (with a visible focus
-  ring); Tab / Shift+Tab move through the rack; Enter follows the link.
+  ring); Tab / Shift+Tab move through the rack; **← → Home End** move along the rail and scroll the focused piece into
+  view; Enter follows the link.
 - **Touch:** there is no hover, so the first tap on a piece activates it (and scrolls it to the centre); a second
   tap follows its link. Previous/next buttons (44 px) appear on touch devices and narrow screens.
-- **Responsive:** the rack is sized to fit its container. Once pieces would drop below their minimum size (about
-  816 px wide for seven pieces) it becomes a horizontally scrollable rack that scrolls inside itself (never the
-  page), with scroll-snap. On phones the pieces are larger and the first and last can still be centred.
-- **Reduced motion:** with `prefers-reduced-motion: reduce` the slide/scale transitions are removed and the
-  cross-fade is shortened to 150 ms; programmatic scrolling is no longer smooth.
+- **Many products — drag / swipe.** Pieces keep their size (up to seven are sized to fit; set `--fit-count` on
+  `.rack__scroller` to change that) and the rail scrolls sideways inside itself, never the page:
+  - **Mouse / pen:** click-and-drag the rail (grab / grabbing cursor). It follows the pointer 1:1 and **glides** on
+    release, stopping exactly at the ends (no overscroll). Pressing on a gliding rail catches it. A press only becomes
+    a drag after 5 px, so clicks and links work normally, and the click that ends a drag never follows a link.
+  - **Touch:** swiping uses the browser's native scrolling, which already has the right momentum on real devices.
+  - **Trackpad / horizontal wheel** work natively; a plain vertical wheel still scrolls the page.
+  - While the rail is moving every piece rests in its hanging pose; once it stops, the piece under the pointer
+    turns round (as in the reference).
+  - A short **position line** under the rail (dark thumb sliding on a light track) shows where you are. It and the grab
+    cursor appear only when the rail actually overflows; with few products nothing changes.
+  - No native scrollbar is shown (the drag, swipe, keys and wheel replace it).
+- **Responsive:** the rack is sized from its container (pieces never drop below a minimum size). On phones the pieces
+  are larger and the first and last can still be centred.
+- **Reduced motion:** with `prefers-reduced-motion: reduce` the slide/scale transitions are removed, the
+  cross-fade is shortened to 150 ms, the drag glide is turned off (the rail stops where you let go) and programmatic
+  scrolling is no longer smooth.
 
 ## Relationship to the reference video
 
@@ -299,9 +312,14 @@ Matched from the supplied screen recording: side-on resting pose → wide front 
 edge to edge, wire hook + wooden neck, hang-tags, the rest of the rack making room, an idle description that swaps to the
 product name on hover, the pill call-to-action, light studio backdrop, small tracked uppercase labels.
 
-**Not** reproduced: the reference's real garment photography (placeholders are used), the product page it opens
-(with a Front / Back toggle), its exact typeface, and exact timings — durations are estimated from frames sampled at
-2 fps, so treat them as approximate. This is not a pixel-accurate copy.
+A second recording showed the rail being dragged: the row follows the pointer with a grab cursor, pieces rest while
+it moves and the one under the pointer turns round when it stops, and a short line under the rack tracks the position.
+That is implemented as described above.
+
+**Not** reproduced: the reference's real garment photography (placeholders are used), the product quick-view it opens on
+click (Front / Back toggle, sizes, add to cart) and the cart drawer, its exact typeface, and exact timings — durations
+are estimated from frames sampled at 2–8 fps, so treat them as approximate. The ghosting of pieces mid-drag in that
+recording looks like screen-capture blur, so no motion trail was added. This is not a pixel-accurate copy.
 
 ## Known limitations
 

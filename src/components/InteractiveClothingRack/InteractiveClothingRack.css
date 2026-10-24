@@ -27,22 +27,31 @@
 /* ------------------------------------------------------------------ layout */
 
 .rack__scroller {
-  /* Size so the whole rail fits (plus room for the slide), within sane limits. */
-  --ph: clamp(17rem, min(calc(100cqw / (var(--count) * 0.36 + 0.48)), 66svh), 38rem);
+  /*
+   * Size so up to --fit-count pieces fit (plus room for the slide), within sane
+   * limits. With more products than that the pieces keep this size and the rail
+   * scrolls, rather than shrinking everything to fit.
+   */
+  --fit-count: 7;
+  --ph: clamp(
+    17rem,
+    min(calc(100cqw / (min(var(--count), var(--fit-count)) * 0.36 + 0.48)), 66svh),
+    38rem
+  );
   --u: calc(var(--ph) / 1000);
   --rail-pad: 2rem;
 
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
+  /* Dragging replaces the scrollbar: no bar, no text selection while dragging. */
+  scrollbar-width: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-@media (pointer: coarse) {
-  .rack__scroller {
-    scrollbar-width: none;
-  }
+.rack__scroller::-webkit-scrollbar {
+  display: none;
 }
 
 /* Phones: bigger pieces, swipe along the rail. */
@@ -83,7 +92,6 @@
   z-index: 1;
   flex: 0 0 calc(var(--u) * 360);
   height: calc(var(--u) * 1020);
-  scroll-snap-align: center;
 }
 
 .rack__slot[data-active='true'] {
@@ -110,6 +118,41 @@
   outline: 2px solid var(--rack-ink);
   outline-offset: -4px;
   border-radius: 6px;
+}
+
+/* A rail that overflows can be dragged: show the grab hand, and the fist while dragging. */
+.rack[data-scrollable='true'] .rack__hit {
+  cursor: grab;
+}
+
+.rack[data-dragging='true'],
+.rack[data-dragging='true'] .rack__hit {
+  cursor: grabbing;
+}
+
+/* ------------------------------------------------------------ scroll position */
+
+/* A short line under the rail: the dark part slides along it as the rail scrolls. */
+.rack__progress {
+  position: relative;
+  width: clamp(5rem, 12cqw, 8rem);
+  height: 2px;
+  margin: -1.25rem auto 0.75rem;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgb(0 0 0 / 0.14);
+}
+
+.rack__progress[hidden] {
+  display: none;
+}
+
+.rack__progress-thumb {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--rack-ink);
+  will-change: transform;
 }
 
 /* ------------------------------------------------------------------- piece */
