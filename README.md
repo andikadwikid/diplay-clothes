@@ -12,7 +12,10 @@ npm install
 npm run dev          # http://localhost:5173 (proxies /api and /media to the backend on :8080)
 npm run build        # typecheck + production build
 npm run placeholders # regenerate the placeholder artwork (see below)
+npm run catalog-images # regenerate the catalog page artwork (see "Catalog page")
 ```
+
+Two pages: `/` is the rack, `/catalog` is the [catalog page](#catalog-page) (filterable product grid).
 
 Without the backend running, the storefront falls back to the bundled demo products
 (`src/data/products.ts`), so the rack can still be developed on its own.
@@ -264,6 +267,40 @@ TEST_DATABASE_URL='postgres://diplay:diplay_dev_password@127.0.0.1:5432/postgres
 | `docker-compose.dev.yml`, `Makefile` | Dev port override for the data tier; `make up/down/redeploy/reset-data` |
 | `public/images/products/*.svg` | **Placeholder** artwork (14 files) |
 | `scripts/generate-placeholders.mjs` | Generates that placeholder artwork |
+| `src/catalog/*` | Catalog page at `/catalog` (see [Catalog page](#catalog-page)) |
+| `public/images/catalog/*.svg`, `scripts/generate-catalog-images.mjs` | Catalog artwork (17 files) and its generator |
+
+## Catalog page
+
+`/catalog` is a product catalog laid out as a hairline grid: header, department strip, hero, a
+search + product-type row, a filter column and a three-column grid with a promo banner after the
+second row. It is a separate, lazily loaded chunk (like the admin panel), so rack visitors do not
+download it. "Shop the Collection" on the rack page links to it.
+
+| Part | Behaviour |
+| --- | --- |
+| Filters | Category, Gender, Colors, Brands (checkboxes / swatches, each with a live count), Price Range (histogram + two handles), plus the type tabs, search box and department strip. Filters combine with AND; several values inside one filter combine with OR. |
+| Counts | A facet's counts ignore its *own* selection (so you can see what ticking another box would give) and options that would match nothing are disabled. |
+| Sort | "Sort By" is a real `<select>` laid invisibly over the button: native keyboard, screen-reader and phone-picker behaviour. |
+| URL | The state lives in the query string (`?cat=fashion&type=jackets&min=60&sort=price-asc`), is written with `replaceState` (no back-button spam) and is validated on load, so shared links work and junk parameters are ignored. |
+| Layout | ≥ 900 px: filter column on the left, "Hide Filter" turns the grid from 3 into 4 columns. Below that the filters become an off-canvas drawer (focus moves in, Esc / backdrop / "Show N products" close it, the page behind is `inert` and does not scroll). |
+
+**Data.** The catalog is demo data in `src/catalog/data.ts` (24 products, shape `CatalogProduct`);
+names, prices, ratings, brands and the "Sale n%" badges are placeholders. The filtering code
+(`filters.ts`) is pure and only sees that array, so to use real products make `useCatalog` take
+them from an API instead of the constant. The Go backend does not serve catalog data yet.
+
+**Artwork.** All product pictures are SVGs drawn by `scripts/generate-catalog-images.mjs`
+(`npm run catalog-images`; hoodies, tees and crewnecks reuse the rack artwork). The promo picture
+is an illustration, not a photo. Replace the files (or the `image` field) with real photography
+at any time; cards use `object-fit: contain`, so 600×500 landscape and portrait images both fit.
+
+**Known limitations.**
+
+- The account and bag buttons in the header are visual only (there is no customer login or cart).
+- Product cards link to `#` because there is no product detail page yet; set `href` per product.
+- The Inter typeface is used when installed, otherwise Helvetica/Arial (no web font is loaded).
+- Departments (the top strip) and categories (the sidebar) are two separate filters, as in the design.
 
 ## Using the component
 

@@ -3,18 +3,33 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import './index.css';
 
-// The admin panel is a separate chunk, so storefront visitors never download it.
+// The admin panel and the catalog are separate chunks, so storefront visitors never download them.
 const AdminApp = lazy(() => import('./admin/AdminApp'));
-const isAdmin = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
+const CatalogPage = lazy(() => import('./catalog/CatalogPage'));
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    {isAdmin ? (
+const isRoute = (base: string) =>
+  window.location.pathname === base || window.location.pathname.startsWith(`${base}/`);
+
+function Root() {
+  if (isRoute('/admin')) {
+    return (
       <Suspense fallback={null}>
         <AdminApp />
       </Suspense>
-    ) : (
-      <App />
-    )}
+    );
+  }
+  if (isRoute('/catalog')) {
+    return (
+      <Suspense fallback={null}>
+        <CatalogPage />
+      </Suspense>
+    );
+  }
+  return <App />;
+}
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <Root />
   </StrictMode>,
 );

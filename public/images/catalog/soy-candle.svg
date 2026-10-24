@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" width="600" height="500">
+<defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c9ccc9" stop-opacity="0.9"/><stop offset="0.4" stop-color="#f3f4f2" stop-opacity="0.95"/><stop offset="1" stop-color="#b9bdb9" stop-opacity="0.9"/></linearGradient><linearGradient id="gw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#efe3cb" stop-opacity="1"/><stop offset="1" stop-color="#d9c8a4" stop-opacity="1"/></linearGradient><filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="9"/></filter></defs>
+<ellipse cx="300" cy="440" rx="120" ry="9" fill="#000" opacity="0.13" filter="url(#soft)"/>
+     <rect x="200" y="140" width="200" height="290" rx="18" fill="url(#gg)" stroke="#9ea29e" stroke-width="1.6"/>
+     <rect x="210" y="190" width="180" height="230" rx="10" fill="url(#gw)"/>
+     <ellipse cx="300" cy="190" rx="90" ry="8" fill="#f4ead6"/>
+     <path d="M300 190 V150" stroke="#2c2622" stroke-width="3"/>
+     <path d="M300 112 C284 132 286 150 300 160 C314 150 316 132 300 112 Z" fill="#f2b84b"/><path d="M300 128 C294 138 295 148 300 154 C305 148 306 138 300 128 Z" fill="#fff1c9"/>
+     <rect x="240" y="250" width="120" height="110" rx="4" fill="#faf8f2" stroke="#d9ceb4" stroke-width="1.2"/>
+     <text x="300" y="296" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="17" fill="#2f2a24" font-weight="700" letter-spacing="4">DIPLAY</text>
+     <text x="300" y="318" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="8.4" fill="#6b6354" letter-spacing="2">SOY WAX CANDLE</text>
+     <text x="300" y="340" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9.4" fill="#6b6354" >Cedar &amp; Fig</text>
+</svg>

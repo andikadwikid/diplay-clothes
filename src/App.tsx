@@ -35,7 +35,7 @@ export function App() {
               label="New collection"
               idleCaption="Crafted in heavyweight fleece. Cut oversized. Made to last."
             >
-              <a className="pill-link" href="#/collection">
+              <a className="pill-link" href="/catalog">
                 Shop the Collection
               </a>
             </InteractiveClothingRack>
